@@ -4,14 +4,14 @@
       <div class="title">
         <img src="../../assets/img/logo_index.png" alt />
       </div>
-      <el-form ref="myForm" :model="loginForm" :rules="loginRules" style="margin-top:30px" >
+      <el-form ref="myForm" :model="loginForm" :rules="loginRules" style="margin-top:30px">
         <el-form-item prop="mobile">
           <el-input v-model="loginForm.mobile" placeholder="请输入手机号"></el-input>
-        </el-form-item >
+        </el-form-item>
         <el-form-item prop="code">
           <el-input v-model="loginForm.code" style="width:65%" placeholder="请输入验证码"></el-input>
           <el-button style="float:right">发送验证码</el-button>
-        </el-form-item >
+        </el-form-item>
         <el-form-item prop="check">
           <el-checkbox v-model="loginForm.check">我已阅读并同意用户写已和隐私条款</el-checkbox>
         </el-form-item>
@@ -34,28 +34,49 @@ export default {
         check: false
       },
       loginRules: {
-        mobile: [{ required: true, message: '请输入您的手机号' },
+        mobile: [
+          { required: true, message: '请输入您的手机号' },
           { pattern: /^1[3456789]\d{9}$/, message: '请输入合法的手机号' }
         ],
-        code: [{ required: true, message: '请输入您的验证码' },
+        code: [
+          { required: true, message: '请输入您的验证码' },
           { pattern: /^\d{6}$/, message: '验证码为6位数字' }
         ],
-        check: [{ validator: function (rule, value, callback) {
-          if (value) {
-            callback()
-          } else {
-            callback(new Error('必须选择'))
+        check: [
+          {
+            validator: function (rule, value, callback) {
+              if (value) {
+                callback()
+              } else {
+                callback(new Error('必须选择'))
+              }
+            }
           }
-        } }]
+        ]
       }
     }
   },
   methods: {
     submitLogin () {
-      this.$refs.myForm.validate(function (isOk) {
+      this.$refs.myForm.validate(isOk => {
         if (isOk) {
           // 前端校验成功
-          console.log('校验成功' + isOk)
+          this.$axios({
+            url: '/authorizations',
+            method: 'post',
+            data: this.loginForm
+          })
+            .then(result => {
+              // 令牌
+              window.localStorage.setItem('user-token', result.data.data.token)
+              this.$router.push('/home')
+            })
+            .catch(() => {
+              this.$message({
+                message: '您输入的手机号或者验证码不正确',
+                tyoe: 'warning'
+              })
+            })
         }
       })
     }
