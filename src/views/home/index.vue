@@ -7,7 +7,7 @@
       <layout-aside></layout-aside>
     </el-aside>
     <!-- 再放置一个container -->
-    <el-container>
+    <el-container style="height:100vh">
       <!-- 上下布局 -->
       <el-header>
         <!-- 头部组件 -->

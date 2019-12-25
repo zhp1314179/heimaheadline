@@ -15,7 +15,7 @@ axios.interceptors.request.use(function (config) {
   // 执行请求失败
 })
 axios.defaults.transformResponse = [function (data) {
-  return JSONBig.parse(data) // JSONbig.parse 替换 JSON.parse  保证数字的正确
+  return data ? JSONBig.parse(data) : {} // JSONbig.parse 替换 JSON.parse  保证数字的正确
 }]
 axios.interceptors.response.use(function (response) {
   return response.data ? response.data : {}
