@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <bread-crumb slot="header">
       <template slot="title">发布文章</template>
     </bread-crumb>
@@ -8,16 +8,18 @@
         <el-input v-model="formData.title" style="width:60%"></el-input>
       </el-form-item>
       <el-form-item label="内容" prop="content">
-        <el-input v-model="formData.content" style="width:92%" type="textarea" :rows="4"></el-input>
+        <quill-editor style="height:400px;padding-left:50px" v-model="formData.content"></quill-editor>
       </el-form-item>
-      <el-form-item label="封面" prop="type">
-        <el-radio-group v-model="formData.cover.type">
+      <el-form-item label="封面" prop="type" style="margin-top:100px">
+        <el-radio-group @change="changeImgWay" v-model="formData.cover.type">
           <el-radio :label="1">单图</el-radio>
           <el-radio :label="3">三图</el-radio>
           <el-radio :label="0">无图</el-radio>
           <el-radio :label="-1">自动</el-radio>
         </el-radio-group>
+
       </el-form-item>
+      <cover-img :images="formData.cover.images"></cover-img>
       <el-form-item prop="channel_id" label="频道">
         <el-select placeholder="请选择" v-model="formData.channel_id">
           <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -32,10 +34,10 @@
 </template>
 
 <script>
-
 export default {
   data () {
     return {
+      loading: false,
       channels: [],
       formData: {
         title: '',
@@ -57,6 +59,27 @@ export default {
     }
   },
   methods: {
+    // 图片传入方式
+    changeImgWay () {
+      console.log(this.formData.cover.type)
+      if (this.formData.cover.type === 1) {
+        this.formData.cover.images = ['']
+      } else if (this.formData.cover.type === 3) {
+        this.formData.cover.images = ['', '', '']
+      } else {
+        this.formData.cover.images = []
+      }
+    },
+    // 修改文章的 调用
+    getArticlesId (articleId) {
+      this.$axios({
+        url: `/articles/${articleId}`
+      }).then(result => {
+        console.log(result)
+
+        this.formData = result.data
+      })
+    },
     getChannels () {
       this.$axios({
         url: '/channels'
@@ -67,11 +90,13 @@ export default {
       })
     },
     publishArticle (draft) {
-      this.$refs.publishForm.validate((isOk) => {
+      // this.loading = true
+      this.$refs.publishForm.validate(isOk => {
         if (isOk) {
+          let { articleId } = this.$route.params
           this.$axios({
-            url: '/articles',
-            method: 'post',
+            url: articleId ? `/articles/${articleId}` : '/articles',
+            method: articleId ? 'put' : 'post',
             params: { draft },
             data: this.formData
           }).then(() => {
@@ -81,11 +106,34 @@ export default {
       })
     }
   },
+  // 监听路由中是否携带参数
+  watch: {
+    $route: function (to, from) {
+      if (Object.keys(to.params).length) {
+        // 判断传过来的params中是否携带参数如果有就是修改
+      } else {
+        // 没有就是发布
+        this.formData = {
+          title: '',
+          content: '',
+          cover: {
+            type: 0,
+            images: []
+          }
+        }
+      }
+    }
+  },
   created () {
     this.getChannels()
+    let { articleId } = this.$route.params // 是否拿到参数
+    articleId && this.getArticlesId(articleId)
   }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+.ql-toolbar.ql-snow {
+  background-color: beige;
+}
 </style>

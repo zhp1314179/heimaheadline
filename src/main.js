@@ -7,6 +7,7 @@ import './styles/index.less' // 引入初始化样式
 import axios from './utils/request'
 import Component from './components'
 import './permission'
+
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 Vue.use(ElementUi)

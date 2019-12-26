@@ -74,7 +74,7 @@
             <i class="el-icon-edit"></i>修改
           </span>
           <span @click="deleteData(item.id.toString())">
-            <i class="el-icon-delete"></i>删除
+            <i @click="updataData(item.id.toString())" class="el-icon-delete"></i>删除
           </span>
         </el-row>
       </el-col>
@@ -113,12 +113,9 @@ export default {
     }
   },
   methods: {
-    //   修改数据
+    //   修改数据 携带id 到文章发布页面
     updataData (id) {
-      this.$axios({
-        url: `/articles/${id}`,
-        method: 'put'
-      }).then(() => {})
+      this.$router.push(`/home/publish/${id}`)
     },
     // 删除数据
     deleteData (id) {

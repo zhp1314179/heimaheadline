@@ -28,7 +28,13 @@ const routes = [
     }, {
       path: 'articles',
       component: () => import('../views/articles')
-    }, {
+    },
+    // 定义动态路由来做修改文章
+    {
+      path: 'publish/:articleId',
+      component: () => import('../views/publish')
+    },
+    {
       path: 'publish',
       component: () => import('../views/publish')
     }]
