@@ -6,6 +6,7 @@ import 'element-ui/lib/theme-chalk/index.css' // 引入elementui样式
 import './styles/index.less' // 引入初始化样式
 import axios from './utils/request'
 import Component from './components'
+
 import './permission'
 
 Vue.prototype.$axios = axios

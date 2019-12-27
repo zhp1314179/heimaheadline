@@ -1,5 +1,5 @@
 <template>
-  <el-card v-loading="loading">
+  <el-card v-loading="loading" >
     <bread-crumb slot="header">
       <template slot="title">发布文章</template>
     </bread-crumb>
@@ -17,9 +17,8 @@
           <el-radio :label="0">无图</el-radio>
           <el-radio :label="-1">自动</el-radio>
         </el-radio-group>
-
       </el-form-item>
-      <cover-img :images="formData.cover.images"></cover-img>
+      <cover-img  @selectImg="changeImg" :images="formData.cover.images"></cover-img>
       <el-form-item prop="channel_id" label="频道">
         <el-select placeholder="请选择" v-model="formData.channel_id">
           <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
@@ -60,15 +59,32 @@ export default {
   },
   methods: {
     // 图片传入方式
+    // changeImgWay() {
+    //   console.log(this.formData.cover.type);
+    //   if (this.formData.cover.type === 1) {
+    //     this.formData.cover.images = [""];
+    //   } else if (this.formData.cover.type === 3) {
+    //     this.formData.cover.images = ["", "", ""];
+    //   } else {
+    //     this.formData.cover.images = [];
+    //   }
+    // },
+    // 点击切换改变才会触发
     changeImgWay () {
-      console.log(this.formData.cover.type)
-      if (this.formData.cover.type === 1) {
-        this.formData.cover.images = ['']
+      if (this.formData.cover.type === 0 || this.formData.cover.type === -1) {
+        this.formData.cover.images = []
       } else if (this.formData.cover.type === 3) {
         this.formData.cover.images = ['', '', '']
-      } else {
-        this.formData.cover.images = []
+      } else if (this.formData.cover.type === 1) {
+        this.formData.cover.images = ['']
       }
+    },
+    changeImg (url, index) {
+      console.log(url, index)
+
+      this.formData.cover.images = this.formData.cover.images.map((item, i) =>
+        i === index ? url : item
+      )
     },
     // 修改文章的 调用
     getArticlesId (articleId) {
@@ -80,6 +96,7 @@ export default {
         this.formData = result.data
       })
     },
+    // 获取频道
     getChannels () {
       this.$axios({
         url: '/channels'

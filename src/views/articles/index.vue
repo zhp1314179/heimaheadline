@@ -148,8 +148,6 @@ export default {
       this.getConditionArticle()
     },
     getConditionArticle () {
-      console.log(this.formData.channel_id)
-
       let params = {
         page: this.page.currentPage,
         per_page: this.page.pageSize,
